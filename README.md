@@ -1,6 +1,8 @@
 ## CodeGator.Reflection: 
 ---
 
+[![Build Status](https://dev.azure.com/codegator/CodeGator.Reflection/_apis/build/status%2FCodeGator.CodeGator.Reflection?branchName=main)](https://dev.azure.com/codegator/CodeGator.Reflection/_build/latest?definitionId=115&branchName=main)
+
 #### What does it do?
 This package contains reflection extensions used by various CodeGator solutions.
 
