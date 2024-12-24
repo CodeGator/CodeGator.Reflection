@@ -19,9 +19,6 @@ If you've spotted a bug in the code please use the project Issues [HERE](https:/
 
 We also have a discussion group [HERE](https://github.com/CodeGator/CodeGator.Reflection/discussions)
 
-#### Is there any documentation?
-There is developer documentation [HERE](https://codegator.github.io/CodeGator.Reflection/)
-
 ##### We also blog about projects like this one on our website, [HERE](http://www.codegator.com)
 ---
 #### Disclaimer
