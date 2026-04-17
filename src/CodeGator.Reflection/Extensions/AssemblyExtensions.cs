@@ -4,24 +4,23 @@ namespace System.Reflection;
 #pragma warning restore IDE0130
 
 /// <summary>
-/// This class utility contains extension methods related to the <see cref="Assembly"/>
-/// type.
+/// This class adds reflection helpers for reading common assembly metadata fields.
 /// </summary>
 public static partial class AssemblyExtensions
 {
-    // *******************************************************************
-    // Public methods.
-    // *******************************************************************
-
-    #region Public methods
 
     /// <summary>
-    /// This method returns a list of types, from the given assembly, that
-    /// are decorated with the specified <typeparamref name="T"/> type.
+    /// This method yields each type in the assembly that carries attribute type T.
     /// </summary>
-    /// <typeparam name="T">The type of attribute to use for the search.</typeparam>
-    /// <param name="assembly">The assembly to use for the search.</param>
-    /// <returns>A list of matching <see cref="Type"/> objects.</returns>
+    /// <remarks>
+    /// Enumeration calls <see cref="Assembly.GetTypes"/>, which loads all types in the assembly.
+    /// </remarks>
+    /// <typeparam name="T">The attribute type to match.</typeparam>
+    /// <param name="assembly">The assembly whose types are scanned.</param>
+    /// <returns>Types that declare <typeparamref name="T"/>.</returns>
+    /// <exception cref="ReflectionTypeLoadException">
+    /// Thrown when type loading fails for the assembly.
+    /// </exception>
     public static IEnumerable<Type> GetDecoratedTypes<T>(
         [NotNull] this Assembly assembly
         ) where T : Attribute
@@ -35,14 +34,11 @@ public static partial class AssemblyExtensions
         }
     }
 
-    // *******************************************************************
-
     /// <summary>
-    /// Reads the value of the <see cref="AssemblyCompanyAttribute"/>
-    /// attribute for the given assembly.
+    /// This method returns the company attribute value, or an empty string if absent.
     /// </summary>
     /// <param name="assembly">The assembly to read from.</param>
-    /// <returns>The value of the given assembly's company attribute.</returns>
+    /// <returns>The company value, or <see cref="string.Empty"/>.</returns>
     public static string ReadCompany(
         [NotNull] this Assembly assembly
         )
@@ -66,14 +62,11 @@ public static partial class AssemblyExtensions
         return attr.Company;
     }
 
-    // *******************************************************************
-
     /// <summary>
-    /// Reads the value of the <see cref="AssemblyCopyrightAttribute"/> 
-    /// attribute for the given assembly.
+    /// This method returns the copyright attribute value, or an empty string if absent.
     /// </summary>
     /// <param name="assembly">The assembly to read from.</param>
-    /// <returns>The value of the given assembly's copyright attribute.</returns>
+    /// <returns>The copyright value, or <see cref="string.Empty"/>.</returns>
     public static string ReadCopyright(
         [NotNull] this Assembly assembly
         )
@@ -97,14 +90,11 @@ public static partial class AssemblyExtensions
         return attr.Copyright;
     }
 
-    // *******************************************************************
-
     /// <summary>
-    /// Reads the value of the <see cref="AssemblyTitleAttribute"/>
-    /// attribute for the given assembly.
+    /// This method returns the title attribute value, or an empty string if absent.
     /// </summary>
     /// <param name="assembly">The assembly to read from.</param>
-    /// <returns>The value of the given assembly's title attribute.</returns>
+    /// <returns>The title value, or <see cref="string.Empty"/>.</returns>
     public static string ReadTitle(
         [NotNull] this Assembly assembly
         )
@@ -128,14 +118,11 @@ public static partial class AssemblyExtensions
         return attr.Title;
     }
 
-    // ******************************************************************
-
     /// <summary>
-    /// Reads the value of the <see cref="AssemblyDescriptionAttribute"/>
-    /// attribute for the given assembly.
+    /// This method returns the description value, or an empty string if absent.
     /// </summary>
     /// <param name="assembly">The assembly to read from.</param>
-    /// <returns>The value of the given assembly's description attribute.</returns>
+    /// <returns>The description value, or <see cref="string.Empty"/>.</returns>
     public static string ReadDescription(
         [NotNull] this Assembly assembly
         )
@@ -159,14 +146,11 @@ public static partial class AssemblyExtensions
         return attr.Description;
     }
 
-    // ******************************************************************
-
     /// <summary>
-    /// Reads the value of the <see cref="AssemblyProductAttribute"/>
-    /// attribute for the given assembly.
+    /// This method returns the product attribute value, or an empty string if absent.
     /// </summary>
     /// <param name="assembly">The assembly to read from.</param>
-    /// <returns>The value of the given assembly's product attribute.</returns>
+    /// <returns>The product value, or <see cref="string.Empty"/>.</returns>
     public static string ReadProduct(
         [NotNull] this Assembly assembly
         )
@@ -190,14 +174,11 @@ public static partial class AssemblyExtensions
         return attr.Product;
     }
 
-    // ******************************************************************
-
     /// <summary>
-    /// Reads the value of the <see cref="AssemblyTrademarkAttribute"/>
-    /// attribute for the given assembly.
+    /// This method returns the trademark attribute value, or an empty string if absent.
     /// </summary>
     /// <param name="assembly">The assembly to read from.</param>
-    /// <returns>The value of the given assembly's trademark attribute.</returns>
+    /// <returns>The trademark value, or <see cref="string.Empty"/>.</returns>
     public static string ReadTrademark(
         [NotNull] this Assembly assembly
         )
@@ -221,14 +202,11 @@ public static partial class AssemblyExtensions
         return attr.Trademark;
     }
 
-    // ******************************************************************
-
     /// <summary>
-    /// Reads the value of the <see cref="AssemblyVersionAttribute"/>
-    /// attribute for the given assembly.
+    /// This method returns the version attribute value, or an empty string if absent.
     /// </summary>
     /// <param name="assembly">The assembly to read from.</param>
-    /// <returns>The value of the given assembly's version attribute.</returns>
+    /// <returns>The version value, or <see cref="string.Empty"/>.</returns>
     public static string ReadAssemblyVersion(
         [NotNull] this Assembly assembly
         )
@@ -252,13 +230,11 @@ public static partial class AssemblyExtensions
         return attr.Version;
     }
 
-    // ******************************************************************
-
     /// <summary>
-    /// This method returns the GIT commit hash for the given assembly.
+    /// This method returns the Git commit fragment from informational version metadata.
     /// </summary>
-    /// <param name="assembly">The assembly to use for the operation.</param>
-    /// <returns>The GIT hash for the assembly.</returns>
+    /// <param name="assembly">The assembly to read from.</param>
+    /// <returns>The substring after '+', or the dummy local-build token when absent.</returns>
     public static string ReadCommit(
         [NotNull] this Assembly assembly
         )
@@ -279,14 +255,16 @@ public static partial class AssemblyExtensions
         return version.Substring(version.IndexOf('+') + 1);
     }
 
-    // ******************************************************************
-
     /// <summary>
-    /// Reads the value of the <see cref="AssemblyInformationalVersionAttribute"/>
-    /// attribute for the given assembly.
+    /// This method returns processed informational version text from assembly metadata.
     /// </summary>
+    /// <remarks>
+    /// When a '+' appears, returns the prefix segment produced by the same length rules as
+    /// the first <see cref="AssemblyInformationalVersionAttribute"/> value; otherwise returns
+    /// the full informational version string.
+    /// </remarks>
     /// <param name="assembly">The assembly to read from.</param>
-    /// <returns>The value of the given assembly's informational version attribute.</returns>
+    /// <returns>The trimmed informational version, or <see cref="string.Empty"/>.</returns>
     public static string ReadInformationalVersion(
         [NotNull] this Assembly assembly
         )
@@ -320,14 +298,11 @@ public static partial class AssemblyExtensions
         }
     }
 
-    // *******************************************************************
-
     /// <summary>
-    /// This method returns the value of the assembly's repository URL attribute.
+    /// This method returns RepositoryUrl metadata, or an empty string if absent.
     /// </summary>
-    /// <param name="asm">the assembly to use for the operation.</param>
-    /// <returns>The value of the repository URL attribute, or an empty string
-    /// if no value was found.</returns>
+    /// <param name="asm">The assembly whose repository URL metadata is read.</param>
+    /// <returns>The metadata value, or an empty string when not found.</returns>
     public static string ReadRepositoryUrl(
         [NotNull] this Assembly asm
         )
@@ -353,5 +328,4 @@ public static partial class AssemblyExtensions
         return repositoryUrlAttribute.Value ?? "";
     }
 
-    #endregion
 }

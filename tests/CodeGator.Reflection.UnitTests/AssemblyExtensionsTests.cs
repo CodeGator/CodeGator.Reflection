@@ -3,21 +3,33 @@ using System.Reflection.Emit;
 
 namespace CodeGator.Reflection.UnitTests;
 
+/// <summary>
+/// This class contains unit tests for assembly extension methods.
+/// </summary>
 [TestClass]
 public sealed class AssemblyExtensionsTests
 {
     /// <summary>
-    /// The CodeGator.Reflection assembly (resolved by assembly-qualified type name to avoid a
-    /// compile-time clash with <c>System.Reflection.AssemblyExtensions</c> from the BCL).
+    /// This property resolves the CodeGator.Reflection assembly for attribute reads.
     /// </summary>
+    /// <remarks>
+    /// Resolved via assembly-qualified type name to avoid a compile-time clash with
+    /// <c>System.Reflection.AssemblyExtensions</c> from the BCL.
+    /// </remarks>
     private static Assembly ReflectionAssembly { get; } = Type.GetType(
         "System.Reflection.AssemblyExtensions, CodeGator.Reflection",
         throwOnError: true)!.Assembly;
 
+    /// <summary>
+    /// This property returns the assembly that is executing these tests.
+    /// </summary>
     private static Assembly ExecutingAssembly => Assembly.GetExecutingAssembly();
 
     #region GetDecoratedTypes
 
+    /// <summary>
+    /// This method asserts decorated types include this test class when marked.
+    /// </summary>
     [TestMethod]
     public void GetDecoratedTypes_ReturnsTypesWithAttribute()
     {
@@ -28,6 +40,9 @@ public sealed class AssemblyExtensionsTests
             types);
     }
 
+    /// <summary>
+    /// This method asserts types without Obsolete are excluded from that search.
+    /// </summary>
     [TestMethod]
     public void GetDecoratedTypes_ExcludesTypesWithoutAttribute()
     {
@@ -36,12 +51,21 @@ public sealed class AssemblyExtensionsTests
         Assert.IsFalse(types.Contains(typeof(AssemblyExtensionsTests)));
     }
 
+    /// <summary>
+    /// This class declares a private attribute used only by GetDecoratedTypes tests.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
     private sealed class MarkerAttribute : Attribute;
 
+    /// <summary>
+    /// This class is a decorated type used only by GetDecoratedTypes tests.
+    /// </summary>
     [Marker]
     private static class GetDecoratedTypesFixture;
 
+    /// <summary>
+    /// This method asserts only types carrying MarkerAttribute are returned.
+    /// </summary>
     [TestMethod]
     public void GetDecoratedTypes_CustomAttribute_FindsDecoratedTypeOnly()
     {
@@ -56,6 +80,9 @@ public sealed class AssemblyExtensionsTests
 
     #region ReadCompany / ReadCopyright (executing assembly — Directory.Build.props)
 
+    /// <summary>
+    /// This method asserts ReadCompany matches the first company attribute value.
+    /// </summary>
     [TestMethod]
     public void ReadCompany_ExecutingAssembly_MatchesAssemblyCompanyAttribute()
     {
@@ -72,6 +99,9 @@ public sealed class AssemblyExtensionsTests
         }
     }
 
+    /// <summary>
+    /// This method asserts ReadCopyright matches the first copyright attribute value.
+    /// </summary>
     [TestMethod]
     public void ReadCopyright_ExecutingAssembly_MatchesAssemblyCopyrightAttribute()
     {
@@ -92,6 +122,9 @@ public sealed class AssemblyExtensionsTests
 
     #region ReadTitle / ReadDescription / ReadProduct / ReadTrademark / ReadAssemblyVersion
 
+    /// <summary>
+    /// This method asserts ReadTitle matches the first AssemblyTitleAttribute value.
+    /// </summary>
     [TestMethod]
     public void ReadTitle_ReflectionAssembly_MatchesAttributeOrEmpty()
     {
@@ -101,6 +134,9 @@ public sealed class AssemblyExtensionsTests
             ReflectionAssembly.ReadTitle);
     }
 
+    /// <summary>
+    /// This method asserts ReadDescription matches the first description attribute.
+    /// </summary>
     [TestMethod]
     public void ReadDescription_ReflectionAssembly_MatchesAttributeOrEmpty()
     {
@@ -110,6 +146,9 @@ public sealed class AssemblyExtensionsTests
             ReflectionAssembly.ReadDescription);
     }
 
+    /// <summary>
+    /// This method asserts ReadProduct matches the first product attribute value.
+    /// </summary>
     [TestMethod]
     public void ReadProduct_ReflectionAssembly_MatchesAttributeOrEmpty()
     {
@@ -119,6 +158,9 @@ public sealed class AssemblyExtensionsTests
             ReflectionAssembly.ReadProduct);
     }
 
+    /// <summary>
+    /// This method asserts ReadTrademark matches the first trademark attribute value.
+    /// </summary>
     [TestMethod]
     public void ReadTrademark_ReflectionAssembly_MatchesAttributeOrEmpty()
     {
@@ -128,6 +170,9 @@ public sealed class AssemblyExtensionsTests
             ReflectionAssembly.ReadTrademark);
     }
 
+    /// <summary>
+    /// This method asserts ReadAssemblyVersion matches the first version attribute.
+    /// </summary>
     [TestMethod]
     public void ReadAssemblyVersion_ReflectionAssembly_MatchesAttributeOrEmpty()
     {
@@ -137,6 +182,13 @@ public sealed class AssemblyExtensionsTests
             ReflectionAssembly.ReadAssemblyVersion);
     }
 
+    /// <summary>
+    /// This method asserts a reader delegate matches the first attribute string value.
+    /// </summary>
+    /// <typeparam name="TAttr">The attribute type to compare.</typeparam>
+    /// <param name="assembly">The assembly providing custom attributes.</param>
+    /// <param name="getValue">Reads the string field from a located attribute.</param>
+    /// <param name="read">The extension method under test.</param>
     private static void AssertReadMatchesFirstStringAttribute<TAttr>(
         Assembly assembly,
         Func<TAttr, string> getValue,
@@ -159,6 +211,9 @@ public sealed class AssemblyExtensionsTests
 
     #region ReadRepositoryUrl
 
+    /// <summary>
+    /// This method asserts ReadRepositoryUrl matches RepositoryUrl metadata when set.
+    /// </summary>
     [TestMethod]
     public void ReadRepositoryUrl_ReflectionAssembly_WhenMetadataPresent_ReturnsUrl()
     {
@@ -181,6 +236,9 @@ public sealed class AssemblyExtensionsTests
 
     #region ReadInformationalVersion / ReadCommit
 
+    /// <summary>
+    /// This method asserts ReadInformationalVersion matches substring expectations.
+    /// </summary>
     [TestMethod]
     public void ReadInformationalVersion_MatchesDocumentedTransformationOfAttribute()
     {
@@ -207,6 +265,9 @@ public sealed class AssemblyExtensionsTests
         Assert.AreEqual(expected, ReflectionAssembly.ReadInformationalVersion());
     }
 
+    /// <summary>
+    /// This method asserts ReadCommit returns the substring after '+' from metadata.
+    /// </summary>
     [TestMethod]
     public void ReadCommit_ReturnsSubstringAfterPlus_FromInformationalVersionOrLocalBuild()
     {
@@ -231,6 +292,9 @@ public sealed class AssemblyExtensionsTests
 
     #region Dynamic assembly (no assembly info attributes)
 
+    /// <summary>
+    /// This method asserts attribute readers return empty for a bare dynamic assembly.
+    /// </summary>
     [TestMethod]
     public void ReadStringAttributes_DynamicAssemblyWithoutAttributes_ReturnEmpty()
     {
@@ -247,6 +311,9 @@ public sealed class AssemblyExtensionsTests
         Assert.AreEqual(string.Empty, asm.ReadRepositoryUrl());
     }
 
+    /// <summary>
+    /// This method asserts ReadCommit returns LOCALBUILD for a bare dynamic assembly.
+    /// </summary>
     [TestMethod]
     public void ReadCommit_DynamicAssemblyWithoutInfoVersion_ReturnsLocalBuild()
     {
@@ -255,6 +322,10 @@ public sealed class AssemblyExtensionsTests
         Assert.AreEqual("LOCALBUILD", asm.ReadCommit());
     }
 
+    /// <summary>
+    /// This method creates a dynamic assembly without assembly info attributes.
+    /// </summary>
+    /// <returns>An empty <see cref="Assembly"/> backed by <see cref="AssemblyBuilder"/>.</returns>
     private static Assembly CreateEmptyDynamicAssembly()
     {
         var name = new AssemblyName("CodeGator.Reflection.UnitTests.EmptyDynamic");
